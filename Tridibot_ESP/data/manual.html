@@ -218,7 +218,7 @@
         </nav>
 
         <div class="alert alert-danger alert-dismissible fade show" id="alertaDesconexion" role="alert" style="display:none;">
-            <strong>Error de Conexion!</strong> Actualiza la pagina para intentar reconectar.
+            <strong>Connection error!</strong>Refresh the page to try to reconnect.
             <button type="button" class="close" onclick="closeAlert()" ontouchstart="closeAlert()">
                 <span aria-hidden="true">&times;</span>
               </button>
@@ -229,7 +229,11 @@
                 <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 myCenter">
                     <div class="row">
                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                            <button class="myButton"><div  onmousedown="forward()" ontouchstart="forward()" onmouseup="stop()" onmouseleave="stop()" ontouchend="stop()" class="hexagon"><span class="hexagonSpan"><i class="fa fa-arrow-up" aria-hidden="true"></i></span></div></button>
+                            <button class="myButton">
+                                <div onmousedown="forward()" ontouchstart="forward()" onmouseup="stop()" onmouseleave="stop()" ontouchend="stop()" class="hexagon">
+                                    <span class="hexagonSpan"><i class="fa fa-arrow-up" aria-hidden="true"></i></span>
+                                </div>
+                            </button>
                         </div>
                     </div>
                     <div class="row">
@@ -273,7 +277,7 @@
                     <div class="row">
                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 myCenter">
                             <br/>
-                            <button id="motorStatus" type="button" class="btn btn-danger" onclick="motorOn()">No conectado</button>
+                            <button id="motorStatus" type="button" class="btn btn-danger" onclick="motorOn()">Not connected</button>
                         </div>
                     </div>
 
