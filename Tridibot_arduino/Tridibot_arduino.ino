@@ -16,34 +16,34 @@ Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ80
 #include <Servo.h>
 
 //-------------------------------------------------------------------
-//      Definicion Alias de cada servo y los Pines del Arduino
+//      Alias definition of each servo and the Arduino pins
 //-------------------------------------------------------------------
 
-#define servo1_pin 8      // Pin Frente Derecha Cuerpo
-#define servo2_pin 7      // Pin Atras Derecha Cuerpo
-#define servo3_pin 3      // Pin Atras Izquierda Cuerpo
-#define servo4_pin 4      // Pin Frente Izquierda Cuerpo
+#define servo1_pin 8      // Pin Front Right Body
+#define servo2_pin 7      // Pin Back Right Body
+#define servo3_pin 3      // Pin Back Left Body
+#define servo4_pin 4      // Pin Front Left Body
 
-#define servo5_pin 9     // Pin Frente Derecha Pata
-#define servo6_pin 6     // Pin Atras Derecha Pata
-#define servo7_pin 2     // Pin Atras Izquierda Pata
-#define servo8_pin 5     // Pin Frente Izquierda Pata
+#define servo5_pin 9     // Pin Front Right Leg
+#define servo6_pin 6     // Pin Back Right Leg
+#define servo7_pin 2     // Pin Back Left Leg
+#define servo8_pin 5     // Pin Left Front Leg
 
 //-------------------------------------------------------------------
-//  Definicion de las constantes posicion inicial de cada servo
+//  Definition of the constant initial position of each servo
 //-------------------------------------------------------------------
 
-//subir = giro antihor en cuerpo y patas
+//subir = antihor twist on body and legs
 
-#define servo1_centro     1400      //Frente_derecha_cuerpo_centro
-#define servo2_centro     1400      //Atras_derecha_cuerpo_centro
-#define servo3_centro     1400      //Atras_Izquierda_cuerpo_centro
-#define servo4_centro     1400      //Frente_Izquierda_cuerpo_centro
+#define servo1_centro     1400      //Front Right Body Center
+#define servo2_centro     1400      //Back right body center
+#define servo3_centro     1400      //Back Left body center
+#define servo4_centro     1400      //Front Left body center
 
-#define servo5_centro      2200      //Frente_derecha_pata_centro
-#define servo6_centro      2200      //Atras_derecha_pata_centro
-#define servo7_centro      2200      //Atras_Izquierda_pata_centro
-#define servo8_centro      2200      //Frente_Izquierda_pata_centro
+#define servo5_centro      2200      //Front right paw center
+#define servo6_centro      2200      //Back right center leg
+#define servo7_centro      2200      //Back Left center leg
+#define servo8_centro      2200      //Front left center leg
 
 //-------------------------------------------------------------------
 
@@ -58,7 +58,7 @@ int movimiento_der;
 int contador_sentarse;
 int distancia_actual = 0;
 
-int aux = 0;  //auxiliar que utilizo para las funciones especiales
+int aux = 0;  //auxiliary I use for special functions
 int variable_sienta = 1500;
 
 int tiempo_entre_servo = 70;
@@ -70,7 +70,7 @@ int auxiliar_saluda = 0;
 int auxiliar_sienta = 0;
 
 //-------------------------------------------------------------------
-//       Defino como le va a llamar cada servo
+//       I define what each servo will call it
 //-------------------------------------------------------------------
 
 Servo servo1;        // Frente Derecha Cuerpo
@@ -85,7 +85,7 @@ Servo servo8;      // Frente Izquierda Pata
 
 
 //-------------------------------------------------------------------
-//                 Seteo de Entradas, salidas y funciones
+//                 Inputs, outputs and functions setting
 //-------------------------------------------------------------------
 
 void setup()
@@ -115,8 +115,8 @@ void setup()
 }
 
 //-------------------------------------------------------------------
-//         Sector donde comienza la funcion Principal,
-//        Donde se va a quedar el resto de la ejecucion
+//         Sector where the main function begins,
+//        Where will the rest of the execution stay
 //-------------------------------------------------------------------
 
 char auxColor;
