@@ -35,33 +35,33 @@ Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ80
 
 //subir = antihor twist on body and legs
 
-#define servo1_centro     1400      //Front Right Body Center
-#define servo2_centro     1400      //Back right body center
-#define servo3_centro     1400      //Back Left body center
-#define servo4_centro     1400      //Front Left body center
+#define servo1_center     140      //Front Right Body Center
+#define servo2_center     140      //Back right body center
+#define servo3_center     140      //Back Left body center
+#define servo4_center     140      //Front Left body center
 
-#define servo5_centro      2200      //Front right paw center
-#define servo6_centro      2200      //Back right center leg
-#define servo7_centro      2200      //Back Left center leg
-#define servo8_centro      2200      //Front left center leg
+#define servo5_center      2200      //Front right paw center
+#define servo6_center      2200      //Back right center leg
+#define servo7_center      2200      //Back Left center leg
+#define servo8_center      2200      //Front left center leg
 
 //-------------------------------------------------------------------
 
-int levanta_pata = 300;
-int levanta_pata2 = 800;
+int lift_paw = 300;
+int lift_paw2 = 800;
 
-int pata_hacia_frente = 800;
+int paw_toward_front = 800;
 
-int movimiento_izq;
-int movimiento_der;
+int left_movement;
+int right_movement;
 
 int contador_sentarse;
 int distancia_actual = 0;
 
 int aux = 0;  //auxiliary I use for special functions
-int variable_sienta = 1500;
+int variable_seat = 1500;
 
-int tiempo_entre_servo = 70;
+int time_between_servo = 70;
 
 const int tiempo_sienta = 50;
 int brillo = 50;
@@ -73,15 +73,15 @@ int auxiliar_sienta = 0;
 //       I define what each servo will call it
 //-------------------------------------------------------------------
 
-Servo servo1;        // Frente Derecha Cuerpo
-Servo servo2;       // Atras Derecha Cuerpo
-Servo servo3;        // Atras Izquierda Cuerpo
-Servo servo4;         // Frente Izquierda Cuerpo
+Servo servo1;
+Servo servo2;
+Servo servo3;
+Servo servo4;
 
-Servo servo5;       // Frente Derecha Pata
-Servo servo6;       // Atras Derecha Pata
-Servo servo7;        // Atras Izquierda Pata
-Servo servo8;      // Frente Izquierda Pata
+Servo servo5;
+Servo servo6;
+Servo servo7;
+Servo servo8;
 
 
 //-------------------------------------------------------------------
@@ -91,7 +91,7 @@ Servo servo8;      // Frente Izquierda Pata
 void setup()
 {
   Serial.begin(115200);
-
+  Serial.println("start");
   pixels.begin();
 
   //activa luces rojas
@@ -130,38 +130,38 @@ void loop() {
 
   switch (variable) {
     case 'Y':
-      apagar_servos();
+      disableServos();
       delay(50);
       Serial.write(variable);
       break;
     case 'Z':
-      activar_servos();
+      activateServos();
       delay(50);
-      posicion_reposo();
+      restingPosition();
       delay(50);
       Serial.write(variable);
       break;
 
     case 'F':
-      Camina_frente();
+      walkFront();
       Serial.write(variable);
       break;
     case 'B':
-      camina_atras();
+      walkBack();
       Serial.write(variable);
       break;
     case 'L':
-      Gira_izq();
+      trunLeft();
       Serial.write(variable);
       break;
     case 'R':
-      Gira_der() ;
+      trunRight() ;
       Serial.write(variable);
       break;
     case 'S':
       auxiliar_saluda = 0;
       auxiliar_sienta = 0;
-      posicion_reposo();
+      restingPosition();
       Serial.write(variable);
       break;
 
@@ -177,94 +177,92 @@ void loop() {
     case 'O':
       if (auxiliar_saluda == 0)
       {
-        sienta_para_saludar();
+        sit_hello();
         auxiliar_saluda = 1;
       }
-      mueve_pata_frente();
+      moveFrontPaw();
       Serial.write(variable);
       break;
 
     case 'E':
-      patea_izquierda();
+      kickLeft();
       Serial.write(variable);
       break;
 
     case 'A':
-      patea_derecha();
+      kickRight();
       Serial.write(variable);
       break;
     case 'C':
-      mostrarColor(brillo, brillo, 0);
+      showColor(brillo, brillo, 0);
       delay(50);
       auxColor = Serial.read();
       if (auxColor == '0')
-        mostrarColor(0, 0, 0);
+        showColor(0, 0, 0);
       else if (auxColor == '1')
-        mostrarColor(brillo, 0, 0);
+        showColor(brillo, 0, 0);
       else if (auxColor == '2')
-        mostrarColor(brillo, 0, brillo);
+        showColor(brillo, 0, brillo);
       else if (auxColor == '3')
-        mostrarColor(0, 0, brillo);
+        showColor(0, 0, brillo);
       else if (auxColor == '4')
-        mostrarColor(0, brillo, brillo);
+        showColor(0, brillo, brillo);
       else if (auxColor == '5')
-        mostrarColor(0, brillo, 0);
+        showColor(0, brillo, 0);
       else if (auxColor == '6')
-        mostrarColor(brillo, brillo, 0);
+        showColor(brillo, brillo, 0);
       else if (auxColor == '7')
-        mostrarColor(brillo, brillo, brillo);
-      
+        showColor(brillo, brillo, brillo);
+
 
       Serial.write(variable);
-      //activar_servos();
+      //activateServos();
       break;
     case 'V':
-      tiempo_entre_servo = map(Serial.parseInt(), 0, 4, 100, 30);
+      time_between_servo = map(Serial.parseInt(), 0, 4, 100, 30);
       Serial.write(variable);
       break;
     case 'b':
       brillo = map(Serial.parseInt(), 0, 9, 0, 50);
-      mostrarColor(brillo, brillo, brillo);
+      showColor(brillo, brillo, brillo);
       Serial.write(variable);
       break;
   }
 
 }
 
-/*  --------  Activar Servos ---------   */
-
-void activar_servos(void)
+void activateServos(void)
 {
   servo1.attach(servo1_pin);
-  servo1.writeMicroseconds(servo1_centro);
+  servo1.writeMicroseconds(servo1_center);
 
   servo2.attach(servo2_pin);
-  servo2.writeMicroseconds(servo2_centro);
+  servo2.writeMicroseconds(servo2_center);
 
   servo3.attach(servo3_pin);
-  servo3.writeMicroseconds(servo3_centro);
+  servo3.writeMicroseconds(servo3_center);
 
   servo4.attach(servo4_pin);
-  servo4.writeMicroseconds(servo4_centro);
+  servo4.writeMicroseconds(servo4_center);
 
   servo5.attach(servo5_pin);
-  servo5.writeMicroseconds(servo5_centro );
+  servo5.writeMicroseconds(servo5_center );
 
   servo6.attach(servo6_pin);
-  servo6.writeMicroseconds(servo6_centro );
+  servo6.writeMicroseconds(servo6_center );
 
   servo7.attach(servo7_pin);
-  servo7.writeMicroseconds(servo7_centro );
+  servo7.writeMicroseconds(servo7_center );
 
   servo8.attach(servo8_pin);
-  servo8.writeMicroseconds(servo8_centro );
+  servo8.writeMicroseconds(servo8_center );
 
-  delay(tiempo_entre_servo);
+  delay(time_between_servo);
 }
 
-/*  --------  Desactivar Servos ---------   */
+/*  --------  Desactivate Servos ---------   */
 
-void apagar_servos(void)
+void disableServos(void)
 {
   servo1.detach();
   servo2.detach();
@@ -274,240 +272,206 @@ void apagar_servos(void)
   servo6.detach();
   servo7.detach();
   servo8.detach();
-  delay(tiempo_entre_servo);
+  delay(time_between_servo);
 }
 //------------------------Funcion donde todos los servos van a reposo---------------
 
-void posicion_reposo(void)
+void restingPosition(void)
 {
-  servo1.writeMicroseconds(servo1_centro);
-  delay(tiempo_entre_servo);
-  servo2.writeMicroseconds(servo2_centro);
-  delay(tiempo_entre_servo);
-  servo3.writeMicroseconds(servo3_centro);
-  delay(tiempo_entre_servo);
-  servo4.writeMicroseconds(servo4_centro);
-  delay(tiempo_entre_servo);
-  servo5.writeMicroseconds(servo5_centro );
-  delay(tiempo_entre_servo);
-  servo6.writeMicroseconds(servo6_centro );
-  delay(tiempo_entre_servo);
-  servo7.writeMicroseconds(servo7_centro );
-  delay(tiempo_entre_servo);
-  servo8.writeMicroseconds(servo8_centro );
-  delay(tiempo_entre_servo);
+  servo1.writeMicroseconds(servo1_center);
+  delay(time_between_servo);
+  servo2.writeMicroseconds(servo2_center);
+  delay(time_between_servo);
+  servo3.writeMicroseconds(servo3_center);
+  delay(time_between_servo);
+  servo4.writeMicroseconds(servo4_center);
+  delay(time_between_servo);
+  servo5.writeMicroseconds(servo5_center);
+  delay(time_between_servo);
+  servo6.writeMicroseconds(servo6_center);
+  delay(time_between_servo);
+  servo7.writeMicroseconds(servo7_center);
+  delay(time_between_servo);
+  servo8.writeMicroseconds(servo8_center);
+  delay(time_between_servo);
 
 }
 
-//--------------------Movimiento Base--------------------
-
-void movimiento_base(void)
+void baseMovement(void)
 {
-  // ----------------sube las patas 8 y 6 ------------------
-  servo6.writeMicroseconds(servo6_centro - levanta_pata);
-  delay(tiempo_entre_servo);
-  servo8.writeMicroseconds(servo8_centro - levanta_pata);
-  delay(tiempo_entre_servo);
+  // ---------------- lift 8 and 6 ------------------
+  servo6.writeMicroseconds(servo6_center - lift_paw);
+  delay(time_between_servo);
+  servo8.writeMicroseconds(servo8_center - lift_paw);
+  delay(time_between_servo);
 
-  // -------------avanza todas las patas-------------------
-  servo4.writeMicroseconds(servo4_centro + movimiento_izq);
-  servo2.writeMicroseconds(servo2_centro - movimiento_der);
-  servo1.writeMicroseconds(servo1_centro + movimiento_der);
-  servo3.writeMicroseconds(servo3_centro - movimiento_izq);
-  delay(tiempo_entre_servo);
+  // ------------- advance all paws-------------------
+  servo4.writeMicroseconds(servo4_center + left_movement);
+  servo2.writeMicroseconds(servo2_center - right_movement);
+  servo1.writeMicroseconds(servo1_center + right_movement);
+  servo3.writeMicroseconds(servo3_center - left_movement);
+  delay(time_between_servo);
 
-  // ----------------baja las patas 8 y 6 ------------------
-  servo6.writeMicroseconds(servo6_centro );
-  delay(tiempo_entre_servo);
-  servo8.writeMicroseconds(servo8_centro );
-  delay(tiempo_entre_servo);
+  // ---------------- down paws 8 and 6 ------------------
+  servo6.writeMicroseconds(servo6_center );
+  delay(time_between_servo);
+  servo8.writeMicroseconds(servo8_center );
+  delay(time_between_servo);
 
-  //----------levanta las patas 5 y 7-----------------
-  servo7.writeMicroseconds(servo7_centro - levanta_pata);
-  delay(tiempo_entre_servo);
-  servo5.writeMicroseconds(servo5_centro - levanta_pata);
-  delay(tiempo_entre_servo);
+  //----------lift paws 5 and 7-----------------
+  servo7.writeMicroseconds(servo7_center - lift_paw);
+  delay(time_between_servo);
+  servo5.writeMicroseconds(servo5_center - lift_paw);
+  delay(time_between_servo);
 
-  // -------------avanza todas las patas-------------------
-  servo1.writeMicroseconds(servo1_centro - movimiento_der);
-  servo3.writeMicroseconds(servo3_centro + movimiento_izq);
-  servo4.writeMicroseconds(servo4_centro - movimiento_izq);
-  servo2.writeMicroseconds(servo2_centro + movimiento_der);
-  delay(tiempo_entre_servo);
+  // ------------- advance all paws-------------------
+  servo1.writeMicroseconds(servo1_center - right_movement);
+  servo3.writeMicroseconds(servo3_center + left_movement);
+  servo4.writeMicroseconds(servo4_center - left_movement);
+  servo2.writeMicroseconds(servo2_center + right_movement);
+  delay(time_between_servo);
 
-  // ----------------baja las patas 5 y 7 ------------------
-  servo7.writeMicroseconds(servo7_centro );
-  delay(tiempo_entre_servo);
-  servo5.writeMicroseconds(servo5_centro );
-  delay(tiempo_entre_servo);
+  // ----------------down paws 5 and 7 ------------------
+  servo7.writeMicroseconds(servo7_center );
+  delay(time_between_servo);
+  servo5.writeMicroseconds(servo5_center );
+  delay(time_between_servo);
 
 }
 
-// -----------------------------------Funcion Avanzar hacia el frente-----------------------
 
-void Camina_frente()
-{
-  movimiento_izq = 300;
-  movimiento_der = 300;
-  movimiento_base();
+void walkFront() {
+  left_movement = 300;
+  right_movement = 300;
+  baseMovement();
 }
 
-// -----------------------------------Funcion Gira Derecha------------------------------------
-void Gira_der()
-{
-  movimiento_izq = -300;
-  movimiento_der = 300;
-  movimiento_base();
+
+void trunRight() {
+  left_movement = -300;
+  right_movement = 300;
+  baseMovement();
 }
 
-// -----------------------------------Funcion Gira Izquierda----------------------------------
-void Gira_izq()
-{
-  movimiento_izq = 300;
-  movimiento_der = -300;
-  movimiento_base();
+void trunLeft() {
+  left_movement = 300;
+  right_movement = -300;
+  baseMovement();
 }
 
-// -----------------------------------Funcion Camina hacia Atras-------------------------------
-void camina_atras()
-{
-  movimiento_izq = -300;
-  movimiento_der = -300;
-  movimiento_base();
+void walkBack() {
+  left_movement = -300;
+  right_movement = -300;
+  baseMovement();
 }
 
-//--------------------funcion con al cual se sienta--------------------
+void sit(void) {
+  servo1.writeMicroseconds(servo1_center);
+  delay(time_between_servo);
+  servo4.writeMicroseconds(servo4_center);
+  delay(time_between_servo);
 
-void sienta(void)
-{
-  servo1.writeMicroseconds(servo1_centro);
-  delay(tiempo_entre_servo);
-  servo4.writeMicroseconds(servo4_centro);
-  delay(tiempo_entre_servo);
+  servo2.writeMicroseconds(servo2_center - variable_seat / 3);
+  delay(time_between_servo);
+  servo3.writeMicroseconds(servo3_center + variable_seat / 3);
+  delay(time_between_servo);
+  servo6.writeMicroseconds(servo6_center - variable_seat / 3);
+  delay(time_between_servo);
+  servo7.writeMicroseconds(servo7_center - variable_seat / 3);
+  delay(time_between_servo);
 
-  servo2.writeMicroseconds(servo2_centro - variable_sienta / 3); //se tira de a poco
-  delay(tiempo_entre_servo);
-  servo3.writeMicroseconds(servo3_centro + variable_sienta / 3);
-  delay(tiempo_entre_servo);
-  servo6.writeMicroseconds(servo6_centro - variable_sienta / 3);
-  delay(tiempo_entre_servo);
-  servo7.writeMicroseconds(servo7_centro - variable_sienta / 3);
-  delay(tiempo_entre_servo);
+  servo2.writeMicroseconds(servo2_center - variable_seat / 2);
+  delay(time_between_servo);
+  servo3.writeMicroseconds(servo3_center + variable_seat / 2);
+  delay(time_between_servo);
+  servo6.writeMicroseconds(servo6_center - variable_seat / 2);
+  delay(time_between_servo);
+  servo7.writeMicroseconds(servo7_center - variable_seat / 2);
+  delay(time_between_servo);
 
-  servo2.writeMicroseconds(servo2_centro - variable_sienta / 2); //se tira de a poco
-  delay(tiempo_entre_servo);
-  servo3.writeMicroseconds(servo3_centro + variable_sienta / 2);
-  delay(tiempo_entre_servo);
-  servo6.writeMicroseconds(servo6_centro - variable_sienta / 2);
-  delay(tiempo_entre_servo);
-  servo7.writeMicroseconds(servo7_centro - variable_sienta / 2);
-  delay(tiempo_entre_servo);
-
-  servo2.writeMicroseconds(servo2_centro - variable_sienta / 2); //se termina de tirar
-  delay(tiempo_entre_servo);
-  servo3.writeMicroseconds(servo3_centro + variable_sienta / 2);
-  delay(tiempo_entre_servo);
+  servo2.writeMicroseconds(servo2_center - variable_seat / 2);
+  delay(time_between_servo);
+  servo3.writeMicroseconds(servo3_center + variable_seat / 2);
+  delay(time_between_servo);
 }
 
-//-------------------se tira para mover las patas y saludar---------------------
+void sit_hello(void) {
+  servo1.writeMicroseconds(servo1_center);
+  delay(time_between_servo / 2);
+  servo4.writeMicroseconds(servo4_center);
+  delay(time_between_servo / 2);
 
-void sienta_para_saludar(void)
-{
-  servo1.writeMicroseconds(servo1_centro);
-  delay(tiempo_entre_servo / 2);
-  servo4.writeMicroseconds(servo4_centro);
-  delay(tiempo_entre_servo / 2);
+  servo2.writeMicroseconds(servo2_center - variable_seat / 2);
+  delay(time_between_servo / 2);
+  // servo3.writeMicroseconds(servo3_center - variable_seat / 2);
+  // delay(time_between_servo / 2);
 
-  servo2.writeMicroseconds(servo2_centro - variable_sienta / 2); //se tira al piso de costado
-  delay(tiempo_entre_servo / 2);
-  // servo3.writeMicroseconds(servo3_centro - variable_sienta / 2);
-  // delay(tiempo_entre_servo / 2);
-
-  servo5.writeMicroseconds(servo5_centro - variable_sienta);
-  delay(tiempo_entre_servo / 2);
-  servo7.writeMicroseconds(servo7_centro - variable_sienta / 3);
-  delay(tiempo_entre_servo / 2);
-  servo7.writeMicroseconds(servo7_centro - variable_sienta / 2);
-  delay(tiempo_entre_servo / 2);
-  servo7.writeMicroseconds(servo7_centro - variable_sienta);
-  delay(tiempo_entre_servo / 2);
-  servo7.writeMicroseconds(servo6_centro - variable_sienta);
-  delay(tiempo_entre_servo / 2);
+  servo5.writeMicroseconds(servo5_center - variable_seat);
+  delay(time_between_servo / 2);
+  servo7.writeMicroseconds(servo7_center - variable_seat / 3);
+  delay(time_between_servo / 2);
+  servo7.writeMicroseconds(servo7_center - variable_seat / 2);
+  delay(time_between_servo / 2);
+  servo7.writeMicroseconds(servo7_center - variable_seat);
+  delay(time_between_servo / 2);
+  servo7.writeMicroseconds(servo6_center - variable_seat);
+  delay(time_between_servo / 2);
 }
 
-//--------------Funcion Mueve Pata en Frente cuando saluda---------------
-
-void mueve_pata_frente(void)
-{
-  int maximo = 500;
-  for (int j = 0; j < maximo; j = j + 100)
-  {
-    servo1.writeMicroseconds(servo1_centro + j); //se tira al piso de costado
-    delay(tiempo_entre_servo);
+void moveFrontPaw(void) {
+  int maximum = 500;
+  for (int j = 0; j < maximum; j = j + 100) {
+    servo1.writeMicroseconds(servo1_center + j);
+    delay(time_between_servo);
   }
 
-  for (int j = maximo; j > 0; j = j - 100)
-  {
-    servo1.writeMicroseconds(servo1_centro + j); //se tira al piso de costado
-    delay(tiempo_entre_servo);
+  for (int j = maximum; j > 0; j = j - 100) {
+    servo1.writeMicroseconds(servo1_center + j);
+    delay(time_between_servo);
   }
 
-  for (int j = 0; j < maximo; j = j + 100)
-  {
-    servo1.writeMicroseconds(servo1_centro - j); //se tira al piso de costado
-    delay(tiempo_entre_servo);
+  for (int j = 0; j < maximum; j = j + 100) {
+    servo1.writeMicroseconds(servo1_center - j);
+    delay(time_between_servo);
   }
 
-  for (int j = maximo; j > 0; j = j - 100)
-  {
-    servo1.writeMicroseconds(servo1_centro - j); //se tira al piso de costado
-    delay(tiempo_entre_servo);
+  for (int j = maximum; j > 0; j = j - 100) {
+    servo1.writeMicroseconds(servo1_center - j);
+    delay(time_between_servo);
   }
 }
 
-
-//------------------Funcion donde patea del lazo izquierdo-----------------
-
-void patea_derecha(void)
-{
-  servo1.writeMicroseconds(servo1_centro - pata_hacia_frente);
-  delay(tiempo_entre_servo * 4);
-  servo7.writeMicroseconds(servo7_centro - levanta_pata);
-  delay(tiempo_entre_servo * 6);
-  servo5.writeMicroseconds(servo5_centro - levanta_pata2);
-  delay(tiempo_entre_servo * 6);
-  servo5.writeMicroseconds(servo5_centro);
-  delay(tiempo_entre_servo);
-  servo1.writeMicroseconds(servo1_centro);
-  delay(tiempo_entre_servo);
-}
-//------------------Funcion donde patea del lazo izquierdo-----------------
-
-void patea_izquierda(void)
-{
-  servo4.writeMicroseconds(servo4_centro + pata_hacia_frente);
-  delay(tiempo_entre_servo * 4);
-  servo6.writeMicroseconds(servo6_centro - levanta_pata);
-  delay(tiempo_entre_servo * 6);
-  servo8.writeMicroseconds(servo8_centro - levanta_pata2);
-  delay(tiempo_entre_servo * 6);
-  servo8.writeMicroseconds(servo8_centro );
-  delay(tiempo_entre_servo);
-  servo4.writeMicroseconds(servo4_centro);
-  delay(tiempo_entre_servo);
+void kickRight(void) {
+  servo1.writeMicroseconds(servo1_center - paw_toward_front);
+  delay(time_between_servo * 4);
+  servo7.writeMicroseconds(servo7_center - lift_paw);
+  delay(time_between_servo * 6);
+  servo5.writeMicroseconds(servo5_center - lift_paw2);
+  delay(time_between_servo * 6);
+  servo5.writeMicroseconds(servo5_center);
+  delay(time_between_servo);
+  servo1.writeMicroseconds(servo1_center);
+  delay(time_between_servo);
 }
 
-void mostrarColor(int r, int g, int b) {
-  for (int i = 0; i < NUMPIXELS; i++)
-  {
+void kickLeft(void) {
+  servo4.writeMicroseconds(servo4_center + paw_toward_front);
+  delay(time_between_servo * 4);
+  servo6.writeMicroseconds(servo6_center - lift_paw);
+  delay(time_between_servo * 6);
+  servo8.writeMicroseconds(servo8_center - lift_paw2);
+  delay(time_between_servo * 6);
+  servo8.writeMicroseconds(servo8_center );
+  delay(time_between_servo);
+  servo4.writeMicroseconds(servo4_center);
+  delay(time_between_servo);
+}
+
+void showColor(int r, int g, int b) {
+  for (int i = 0; i < NUMPIXELS; i++) {
     // pixels.Color takes RGB values, from 0,0,0 up to 255,255,255
     pixels.setPixelColor(i, pixels.Color(r, g, b)); // Moderately bright green color.
     pixels.show(); // This sends the updated pixel color to the hardware.
     //delay(200); // Delay for a period of time (in milliseconds).
   }
 }
-
-//
-//-------------------------------------------------------------------
-//               FIN PROGRAMA
-//-------------------------------------------------------------------
